@@ -23,29 +23,24 @@ parse_html_request = function(str) {
   req
 }
 
-call_gen = function(fun_env) {
+call_gen = function(fun_env, to_json = RJSONIO::toJSON) {
   function(req) {
-#    ret = toJSON({
-      tryCatch({
-        fun = fun_env[[req[['fun']]]]
-        if(!is.null(fun)){
-          body = req[['body']]
-          if(!is.null(body)) {
-            class(body) <- c(class(body), class(req))
-          }
-          ret = success(toJSON(fun(body)))
-		  print(ret)
-        } else { 
-          ret= method_not_found()
-        }
-        ret
-      }, error = function(e) {
-        throw_error()
-      })
-#    })
-#    ret = sub("\n", "", ret)
-    # print(ret)
-    # ret
+    tryCatch({
+    fun = fun_env[[req[['fun']]]]
+    if(!is.null(fun)){
+      body = req[['body']]
+      if(!is.null(body)) {
+        class(body) <- c(class(body), class(req))
+      }
+      ret = success(to_json(fun(body)))
+      print(ret)
+    } else { 
+      ret= method_not_found()
+    }
+    ret
+    }, error = function(e) {
+    throw_error()
+    })
   }
 }
 
